@@ -498,6 +498,25 @@ drive(int index, tCarElt* car, tSituation *s)
     stateString += SimpleParser::stringify("wheelSpinVel", wheelSpinVel, 4);
     stateString += SimpleParser::stringify("z", car->_pos_Z  - RtTrackHeightL(&(car->_trkPos)));
 	stateString += SimpleParser::stringify("focus", focusSensorOut, 5);//ML
+	int length = 11;
+	float radiusrArray[length];
+	float radiuslArray[length];
+	float lengthArray[length];
+	float widthArray[length];
+	tTrackSeg *seg = car->_trkPos.seg;
+	for (int i = 0; i < length; ++i){
+		radiusrArray[i] = seg->radiusr;
+		radiuslArray[i] = seg->radiusl;
+		lengthArray[i] = seg->length;
+		widthArray[i] = seg->width;
+		seg = seg->next;
+	}
+
+	// Statestring update
+	stateString += SimpleParser::stringify("radiusr", radiusrArray, length);
+	stateString += SimpleParser::stringify("radiusl", radiuslArray, length);
+	stateString += SimpleParser::stringify("length", lengthArray, length);
+	stateString += SimpleParser::stringify("width", widthArray, length);
 
     char line[UDP_MSGLEN];
     sprintf(line,"%s",stateString.c_str());
