@@ -174,6 +174,7 @@ void Driver::endRace(tSituation *s)
 /* Compute the allowed speed on a segment */
 float Driver::getAllowedSpeed(tTrackSeg *segment)
 {
+	/*
 	if (segment->type == TR_STR) {
 		lastsegtype = TR_STR;
 		return FLT_MAX;
@@ -194,6 +195,8 @@ float Driver::getAllowedSpeed(tTrackSeg *segment)
 		float r = (segment->radius + segment->width/2.0)/lastturnarc;
 		return sqrt((mu*G*r)/(1.0 - MIN(1.0, r*CA*mu/mass)));
 	}
+	*/
+	return 50;
 }
 
 

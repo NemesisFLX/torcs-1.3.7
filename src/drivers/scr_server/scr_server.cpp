@@ -60,7 +60,7 @@ typedef struct sockaddr_in tSockAddrIn;
 #define UDP_LISTEN_PORT 3001
 #define UDP_ID "SCR"
 #define UDP_DEFAULT_TIMEOUT 10000
-#define UDP_MSGLEN 1000
+#define UDP_MSGLEN 3000
 //#define __UDP_SERVER_VERBOSE__
 /************************/
 
@@ -495,10 +495,55 @@ drive(int index, tCarElt* car, tSituation *s)
     stateString += SimpleParser::stringify("speedZ", float(car->_speed_z  * 3.6));
     stateString += SimpleParser::stringify("track", trackSensorOut, 19);
     stateString += SimpleParser::stringify("trackPos", dist_to_middle);
-    stateString += SimpleParser::stringify("wheelSpinVel", wheelSpinVel, 4);
+    //stateString += SimpleParser::stringify("wheelSpinVel", wheelSpinVel, 4);
     stateString += SimpleParser::stringify("z", car->_pos_Z  - RtTrackHeightL(&(car->_trkPos)));
-	stateString += SimpleParser::stringify("focus", focusSensorOut, 5);//ML
+	//stateString += SimpleParser::stringify("focus", focusSensorOut, 5);//ML
 
+	int length = 28;
+	float radiusrArray[length];
+	float radiuslArray[length];
+	float lengthArray[length];
+	float widthArray[length];
+    float xSLArray[length];
+    float ySLArray[length];
+    float xSRArray[length];
+    float ySRArray[length];
+    float yCenterArray[length];
+    float xCenterArray[length];
+	tTrackSeg *seg = car->_trkPos.seg;
+    seg = seg->prev;
+	for (int i = 0; i < length; ++i){
+		radiusrArray[i] = seg->radiusr;
+		radiuslArray[i] = seg->radiusl;
+		lengthArray[i] = seg->length;
+		widthArray[i] = seg->width;
+        xSLArray[i] = seg->vertex[TR_SL].x;
+        ySLArray[i] = seg->vertex[TR_SL].y;
+        xSRArray[i] = seg->vertex[TR_SR].x;
+        ySRArray[i] = seg->vertex[TR_SR].y;
+        xCenterArray[i] = seg->center.x;
+        yCenterArray[i] = seg->center.y;
+		seg = seg->next;
+	}
+
+	// Statestring update
+
+    stateString += SimpleParser::stringify("globalspeedY", float(car->_speed_Y  * 3.6));
+    stateString += SimpleParser::stringify("globalspeedX", float(car->_speed_X  * 3.6));
+    stateString += SimpleParser::stringify("X", car->_pos_X);
+    stateString += SimpleParser::stringify("Y", car->_pos_Y);
+	stateString += SimpleParser::stringify("radiusr", radiusrArray, length);
+    //stateString += SimpleParser::stringify("id", idArray, length);
+	stateString += SimpleParser::stringify("radiusl", radiuslArray, length);
+	stateString += SimpleParser::stringify("length", lengthArray, length);
+	stateString += SimpleParser::stringify("width", widthArray, length);
+    stateString += SimpleParser::stringify("SLX", xSLArray, length);
+    stateString += SimpleParser::stringify("SLY", ySLArray, length);
+    stateString += SimpleParser::stringify("SRX", xSRArray, length);
+    stateString += SimpleParser::stringify("SRY", ySRArray, length);
+    stateString += SimpleParser::stringify("CenterX", xCenterArray, length);
+    stateString += SimpleParser::stringify("CenterY", yCenterArray, length);
+    
     char line[UDP_MSGLEN];
     sprintf(line,"%s",stateString.c_str());
 
